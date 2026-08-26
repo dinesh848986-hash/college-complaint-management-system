@@ -8,6 +8,7 @@ import {
   User,
   Menu,
   X,
+  Shield,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -49,6 +50,20 @@ const Navbar = () => {
           {/* Desktop Navigation Links */}
           {user && (
             <nav className="hidden md:flex items-center gap-2">
+              {user.role === 'admin' && (
+                <Link
+                  to="/admin"
+                  className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    isActive('/admin')
+                      ? 'bg-campus-600 text-white shadow-sm'
+                      : 'bg-campus-50 text-campus-700 hover:bg-campus-100 font-semibold'
+                  }`}
+                >
+                  <Shield className="w-4 h-4" />
+                  Admin Console
+                </Link>
+              )}
+
               <Link
                 to="/dashboard"
                 className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium transition-colors ${
@@ -58,7 +73,7 @@ const Navbar = () => {
                 }`}
               >
                 <LayoutDashboard className="w-4 h-4" />
-                Dashboard
+                {user.role === 'admin' ? 'Student View' : 'Dashboard'}
               </Link>
 
               <Link
@@ -66,6 +81,8 @@ const Navbar = () => {
                 className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium transition-colors ${
                   isActive('/complaints/new')
                     ? 'bg-campus-600 text-white shadow-sm'
+                    : user.role === 'admin'
+                    ? 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                     : 'bg-campus-50 text-campus-700 hover:bg-campus-100'
                 }`}
               >
@@ -83,8 +100,15 @@ const Navbar = () => {
                   {user.name ? user.name.charAt(0).toUpperCase() : <User className="w-4 h-4" />}
                 </div>
                 <div className="text-left">
-                  <div className="text-xs font-semibold text-slate-800 leading-tight">
-                    {user.name}
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs font-semibold text-slate-800 leading-tight">
+                      {user.name}
+                    </span>
+                    {user.role === 'admin' && (
+                      <span className="text-[9px] font-extrabold uppercase bg-campus-100 text-campus-700 px-1.5 py-0.5 rounded border border-campus-200">
+                        Admin
+                      </span>
+                    )}
                   </div>
                   <div className="text-[10px] text-slate-500 leading-tight">
                     {user.studentId ? `ID: ${user.studentId}` : user.email}
@@ -148,13 +172,24 @@ const Navbar = () => {
                 </div>
               </div>
 
+              {user.role === 'admin' && (
+                <Link
+                  to="/admin"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center gap-3 px-3 py-2 rounded-lg text-campus-700 bg-campus-50 text-sm font-semibold"
+                >
+                  <Shield className="w-4 h-4 text-campus-600" />
+                  Admin Console
+                </Link>
+              )}
+
               <Link
                 to="/dashboard"
                 onClick={() => setMobileMenuOpen(false)}
                 className="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-50 text-sm font-medium"
               >
                 <LayoutDashboard className="w-4 h-4 text-slate-500" />
-                Dashboard
+                {user.role === 'admin' ? 'Student View' : 'Dashboard'}
               </Link>
 
               <Link

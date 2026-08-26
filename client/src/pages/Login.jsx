@@ -9,6 +9,7 @@ import {
   AlertCircle,
   Loader2,
   CheckCircle2,
+  Shield,
 } from 'lucide-react';
 
 const Login = () => {
@@ -34,8 +35,10 @@ const Login = () => {
 
     try {
       setIsSubmitting(true);
-      await login(email, password);
-      navigate(from, { replace: true });
+      const user = await login(email, password);
+      const defaultDest = user?.role === 'admin' ? '/admin' : '/dashboard';
+      const destination = from !== '/dashboard' ? from : defaultDest;
+      navigate(destination, { replace: true });
     } catch (err) {
       setError(
         err.response?.data?.message || 'Login failed. Please verify your credentials.'
@@ -48,6 +51,12 @@ const Login = () => {
   const fillDemoStudent = () => {
     setEmail('student@campus.edu');
     setPassword('student123');
+    setError('');
+  };
+
+  const fillDemoAdmin = () => {
+    setEmail('admin@campus.edu');
+    setPassword('admin123');
     setError('');
   };
 
@@ -139,15 +148,23 @@ const Login = () => {
             </button>
           </form>
 
-          {/* Quick Demo Student Button */}
-          <div className="mt-6 pt-5 border-t border-slate-100">
+          {/* Quick Demo Credentials */}
+          <div className="mt-6 pt-5 border-t border-slate-100 grid grid-cols-2 gap-2.5">
             <button
               type="button"
               onClick={fillDemoStudent}
-              className="w-full bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-medium py-2 px-3 rounded-lg border border-slate-200/80 transition-colors flex items-center justify-center gap-1.5"
+              className="bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-medium py-2 px-2.5 rounded-lg border border-slate-200/80 transition-colors flex items-center justify-center gap-1.5"
             >
               <CheckCircle2 className="w-3.5 h-3.5 text-campus-600" />
-              Fill Demo Student Credentials
+              Demo Student
+            </button>
+            <button
+              type="button"
+              onClick={fillDemoAdmin}
+              className="bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-medium py-2 px-2.5 rounded-lg border border-slate-200/80 transition-colors flex items-center justify-center gap-1.5"
+            >
+              <Shield className="w-3.5 h-3.5 text-amber-600" />
+              Demo Admin
             </button>
           </div>
 

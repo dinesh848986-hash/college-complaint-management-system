@@ -5,6 +5,7 @@ import StatusBadge from '../components/StatusBadge';
 import PriorityBadge from '../components/PriorityBadge';
 import StatusTimeline from '../components/StatusTimeline';
 import LoadingSpinner from '../components/LoadingSpinner';
+import { useAuth } from '../context/AuthContext';
 import {
   ArrowLeft,
   MapPin,
@@ -19,13 +20,27 @@ import {
   CheckCircle2,
   FileText,
   AlertCircle,
+  Shield,
+  Save,
+  UserCheck,
 } from 'lucide-react';
 
 const ComplaintDetails = () => {
   const { id } = useParams();
+  const { user } = useAuth();
   const [complaint, setComplaint] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  // Admin Management Form State
+  const [adminStatus, setAdminStatus] = useState('');
+  const [adminDepartment, setAdminDepartment] = useState('');
+  const [adminStaff, setAdminStaff] = useState('');
+  const [adminComments, setAdminComments] = useState('');
+  const [adminResolution, setAdminResolution] = useState('');
+  const [adminSaving, setAdminSaving] = useState(false);
+  const [adminSuccess, setAdminSuccess] = useState('');
+  const [adminError, setAdminError] = useState('');
 
   useEffect(() => {
     const fetchDetail = async () => {
@@ -34,6 +49,15 @@ const ComplaintDetails = () => {
         setError('');
         const data = await complaintAPI.getComplaintById(id);
         setComplaint(data.complaint);
+
+        // Populate admin form initial state
+        if (data.complaint) {
+          setAdminStatus(data.complaint.status || 'Submitted');
+          setAdminDepartment(data.complaint.assignedDepartment || '');
+          setAdminStaff(data.complaint.assignedStaff || '');
+          setAdminComments(data.complaint.adminComments || '');
+          setAdminResolution(data.complaint.resolutionDetails || '');
+        }
       } catch (err) {
         console.error('Error fetching complaint details:', err);
         setError(
@@ -46,6 +70,34 @@ const ComplaintDetails = () => {
 
     fetchDetail();
   }, [id]);
+
+  const handleAdminUpdate = async (e) => {
+    e.preventDefault();
+    try {
+      setAdminSaving(true);
+      setAdminError('');
+      setAdminSuccess('');
+
+      const payload = {
+        status: adminStatus,
+        assignedDepartment: adminDepartment,
+        assignedStaff: adminStaff,
+        adminComments: adminComments,
+        resolutionDetails: adminResolution,
+      };
+
+      const res = await complaintAPI.updateComplaint(id, payload);
+      setComplaint(res.complaint);
+      setAdminSuccess('Complaint successfully updated!');
+    } catch (err) {
+      console.error('Admin update failed:', err);
+      setAdminError(
+        err.response?.data?.message || 'Failed to update complaint. Please try again.'
+      );
+    } finally {
+      setAdminSaving(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -83,11 +135,13 @@ const ComplaintDetails = () => {
       {/* Navigation Header */}
       <div className="flex items-center justify-between">
         <Link
-          to="/dashboard"
+          to={user?.role === 'admin' ? '/admin' : '/dashboard'}
           className="inline-flex items-center gap-2 text-xs font-semibold text-slate-500 hover:text-slate-900 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
-          Back to Complaints Dashboard
+          {user?.role === 'admin'
+            ? 'Back to Administration Console'
+            : 'Back to Complaints Dashboard'}
         </Link>
         <span className="text-xs text-slate-400 font-mono">
           ID: {complaint._id}
@@ -238,6 +292,120 @@ const ComplaintDetails = () => {
 
         {/* Right Column (1 Col) - Administrative Status & Staff Details */}
         <div className="space-y-6">
+          {/* Admin Management Panel (Rendered only for role === 'admin') */}
+          {user?.role === 'admin' && (
+            <div className="bg-white rounded-2xl border-2 border-campus-200 shadow-soft p-6 space-y-4">
+              <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
+                <div className="p-1.5 rounded-lg bg-campus-100 text-campus-700">
+                  <Shield className="w-4 h-4" />
+                </div>
+                <div>
+                  <h2 className="text-sm font-bold text-slate-900">
+                    Administrator Controls
+                  </h2>
+                  <p className="text-[11px] text-slate-500">
+                    Update lifecycle status, staff assignment, and resolution notes
+                  </p>
+                </div>
+              </div>
+
+              {adminSuccess && (
+                <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 p-3 rounded-xl text-xs flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span>{adminSuccess}</span>
+                </div>
+              )}
+
+              {adminError && (
+                <div className="bg-rose-50 border border-rose-200 text-rose-800 p-3 rounded-xl text-xs flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                  <span>{adminError}</span>
+                </div>
+              )}
+
+              <form onSubmit={handleAdminUpdate} className="space-y-3.5">
+                <div>
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1">
+                    Status Lifecycle
+                  </label>
+                  <select
+                    value={adminStatus}
+                    onChange={(e) => setAdminStatus(e.target.value)}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-campus-500"
+                  >
+                    <option value="Submitted">Submitted</option>
+                    <option value="Under Review">Under Review</option>
+                    <option value="Assigned">Assigned</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Resolved">Resolved</option>
+                    <option value="Closed">Closed</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1">
+                    Assigned Department
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Electrical & HVAC Maintenance"
+                    value={adminDepartment}
+                    onChange={(e) => setAdminDepartment(e.target.value)}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-campus-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1">
+                    Assigned Staff / Technician
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. David Miller (Senior Tech)"
+                    value={adminStaff}
+                    onChange={(e) => setAdminStaff(e.target.value)}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-campus-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1">
+                    Administrative Note / Comment
+                  </label>
+                  <textarea
+                    rows={2}
+                    placeholder="Internal comment or staff update for student..."
+                    value={adminComments}
+                    onChange={(e) => setAdminComments(e.target.value)}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-campus-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-emerald-800 mb-1">
+                    Resolution Summary
+                  </label>
+                  <textarea
+                    rows={2}
+                    placeholder="Document how this issue was resolved..."
+                    value={adminResolution}
+                    onChange={(e) => setAdminResolution(e.target.value)}
+                    className="w-full px-3 py-2 bg-emerald-50/40 border border-emerald-300 rounded-xl text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={adminSaving}
+                  className="w-full bg-campus-600 hover:bg-campus-700 text-white font-semibold text-xs py-2.5 px-4 rounded-xl shadow-xs transition-colors flex items-center justify-center gap-2 disabled:opacity-60"
+                >
+                  <Save className="w-3.5 h-3.5" />
+                  {adminSaving ? 'Applying Changes...' : 'Save & Update Grievance'}
+                </button>
+              </form>
+            </div>
+          )}
+
           {/* Department & Staff Assignment */}
           <div className="bg-white rounded-2xl border border-slate-200/80 shadow-soft p-6 space-y-4">
             <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">

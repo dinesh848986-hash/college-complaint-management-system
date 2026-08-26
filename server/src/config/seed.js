@@ -3,6 +3,7 @@ const Complaint = require('../models/Complaint');
 
 const seedDemoData = async () => {
   try {
+    // Seed default student
     const demoEmail = 'student@campus.edu';
     let demoUser = await User.findOne({ email: demoEmail }).select('+password');
 
@@ -23,6 +24,31 @@ const seedDemoData = async () => {
         demoUser.password = 'student123';
         await demoUser.save();
         console.log(`[Seed] Demo student password synchronized to student123`);
+      }
+    }
+
+    // Seed default administrator
+    const adminEmail = 'admin@campus.edu';
+    let adminUser = await User.findOne({ email: adminEmail }).select('+password');
+
+    if (!adminUser) {
+      adminUser = await User.create({
+        name: 'Campus Administrator',
+        email: adminEmail,
+        password: 'admin123',
+        role: 'admin',
+        studentId: 'ADMIN-01',
+        department: 'Administration',
+        phone: '555-0100',
+      });
+      console.log(`[Seed] Demo admin account created: ${adminEmail} / admin123`);
+    } else {
+      const adminMatches = await adminUser.comparePassword('admin123');
+      if (!adminMatches || adminUser.role !== 'admin') {
+        adminUser.password = 'admin123';
+        adminUser.role = 'admin';
+        await adminUser.save();
+        console.log(`[Seed] Demo admin account updated and synchronized: ${adminEmail}`);
       }
     }
 

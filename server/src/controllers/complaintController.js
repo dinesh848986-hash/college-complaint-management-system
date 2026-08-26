@@ -136,8 +136,203 @@ const getComplaintById = async (req, res, next) => {
   }
 };
 
+// @desc    Get all complaints across all students (Admin only)
+// @route   GET /api/complaints/admin
+// @access  Private (Admin)
+const getAdminComplaints = async (req, res, next) => {
+  try {
+    const { status, category, priority, search } = req.query;
+    const query = {};
+
+    if (status && status !== 'All') {
+      query.status = status;
+    }
+
+    if (category && category !== 'All') {
+      query.category = category;
+    }
+
+    if (priority && priority !== 'All') {
+      query.priority = priority;
+    }
+
+    if (search && search.trim() !== '') {
+      const searchRegex = new RegExp(search.trim(), 'i');
+      query.$or = [
+        { title: searchRegex },
+        { location: searchRegex },
+        { description: searchRegex },
+        { assignedDepartment: searchRegex },
+        { assignedStaff: searchRegex },
+      ];
+    }
+
+    const complaints = await Complaint.find(query)
+      .sort({ createdAt: -1 })
+      .populate('student', 'name email studentId department phone');
+
+    res.status(200).json({
+      success: true,
+      count: complaints.length,
+      complaints,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Update complaint details, status lifecycle, department assignment, admin comments, resolution (Admin only)
+// @route   PATCH /api/complaints/:id
+// @access  Private (Admin)
+const updateComplaint = async (req, res, next) => {
+  try {
+    const {
+      status,
+      assignedDepartment,
+      assignedStaff,
+      adminComments,
+      resolutionDetails,
+      priority,
+      statusComment,
+    } = req.body;
+
+    const complaint = await Complaint.findById(req.params.id);
+    if (!complaint) {
+      return res.status(404).json({
+        success: false,
+        message: 'Complaint not found',
+      });
+    }
+
+    const validStatuses = [
+      'Submitted',
+      'Under Review',
+      'Assigned',
+      'In Progress',
+      'Resolved',
+      'Closed',
+    ];
+
+    // Status change lifecycle tracking
+    if (status !== undefined) {
+      if (!validStatuses.includes(status)) {
+        return res.status(400).json({
+          success: false,
+          message: `Invalid status: "${status}". Valid statuses are: ${validStatuses.join(', ')}`,
+        });
+      }
+
+      if (status !== complaint.status) {
+        const comment =
+          statusComment ||
+          adminComments ||
+          `Status transitioned from "${complaint.status}" to "${status}" by administrator.`;
+
+        complaint.statusHistory.push({
+          status,
+          changedAt: new Date(),
+          comment,
+        });
+
+        complaint.status = status;
+      }
+    }
+
+    // Update departmental assignments
+    if (assignedDepartment !== undefined) {
+      complaint.assignedDepartment = assignedDepartment.trim();
+    }
+
+    if (assignedStaff !== undefined) {
+      complaint.assignedStaff = assignedStaff.trim();
+    }
+
+    // Update admin notes and resolution details
+    if (adminComments !== undefined) {
+      complaint.adminComments = adminComments.trim();
+    }
+
+    if (resolutionDetails !== undefined) {
+      complaint.resolutionDetails = resolutionDetails.trim();
+    }
+
+    // Optional priority adjustment
+    if (priority !== undefined) {
+      const validPriorities = ['Low', 'Medium', 'High', 'Critical'];
+      if (!validPriorities.includes(priority)) {
+        return res.status(400).json({
+          success: false,
+          message: `Invalid priority: "${priority}". Valid priorities are: ${validPriorities.join(', ')}`,
+        });
+      }
+      complaint.priority = priority;
+    }
+
+    await complaint.save();
+
+    const populatedComplaint = await Complaint.findById(complaint._id).populate(
+      'student',
+      'name email studentId department phone'
+    );
+
+    res.status(200).json({
+      success: true,
+      message: 'Complaint updated successfully',
+      complaint: populatedComplaint,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Delete complaint (Admin can delete any; Student can delete only own 'Submitted' complaint)
+// @route   DELETE /api/complaints/:id
+// @access  Private (Owner Student / Admin)
+const deleteComplaint = async (req, res, next) => {
+  try {
+    const complaint = await Complaint.findById(req.params.id);
+    if (!complaint) {
+      return res.status(404).json({
+        success: false,
+        message: 'Complaint not found',
+      });
+    }
+
+    const isOwner = complaint.student.toString() === req.user._id.toString();
+    const isAdmin = req.user.role === 'admin';
+
+    if (!isAdmin && !isOwner) {
+      return res.status(403).json({
+        success: false,
+        message: 'Forbidden: You do not have permission to delete this complaint',
+      });
+    }
+
+    // If student is deleting, only allow if complaint has not progressed past 'Submitted'
+    if (!isAdmin && complaint.status !== 'Submitted') {
+      return res.status(400).json({
+        success: false,
+        message: `Cannot delete complaint that is already "${complaint.status}". Only newly submitted complaints can be canceled.`,
+      });
+    }
+
+    await Complaint.findByIdAndDelete(req.params.id);
+
+    res.status(200).json({
+      success: true,
+      message: 'Complaint deleted successfully',
+      id: req.params.id,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   createComplaint,
   getStudentComplaints,
   getComplaintById,
+  getAdminComplaints,
+  updateComplaint,
+  deleteComplaint,
 };

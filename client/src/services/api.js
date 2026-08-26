@@ -71,6 +71,18 @@ export const complaintAPI = {
     });
     return res.data;
   },
+  getAdminComplaints: async (params = {}) => {
+    const res = await api.get('/complaints/admin', { params });
+    return res.data;
+  },
+  updateComplaint: async (id, updateData) => {
+    const res = await api.patch(`/complaints/${id}`, updateData);
+    return res.data;
+  },
+  deleteComplaint: async (id) => {
+    const res = await api.delete(`/complaints/${id}`);
+    return res.data;
+  },
 };
 
 export default api;
