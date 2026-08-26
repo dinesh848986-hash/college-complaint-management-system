@@ -8,6 +8,7 @@ const dotenv = require('dotenv');
 dotenv.config({ path: path.join(__dirname, '../.env') });
 
 const { connectDB } = require('./config/db');
+const { seedDemoData } = require('./config/seed');
 const authRoutes = require('./routes/authRoutes');
 const complaintRoutes = require('./routes/complaintRoutes');
 const { notFound, errorHandler } = require('./middleware/errorMiddleware');
@@ -64,6 +65,7 @@ const PORT = process.env.PORT || 5000;
 const startServer = async () => {
   try {
     await connectDB();
+    await seedDemoData();
     const serverInstance = app.listen(PORT, () => {
       console.log(
         `[Server] College Complaint Management System (Unified Frontend + Backend) running in ${
