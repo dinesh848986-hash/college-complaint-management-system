@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+
+# Environment files
+.env
+.env.*
+
+# Binaries
+cloudflared.exe
+*.exe
+
+# Build outputs
+dist/
+build/
+
+# Uploads & Logs
+server/uploads/*
+!server/uploads/.gitkeep
+*.log
+
+# OS & Editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

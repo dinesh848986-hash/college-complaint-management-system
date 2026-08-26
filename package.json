@@ -1,0 +1,15 @@
+{
+  "name": "college-complaint-management-system",
+  "version": "1.0.0",
+  "description": "College Complaint Management System - Centralized digital platform for students",
+  "scripts": {
+    "install:all": "npm --prefix server install && npm --prefix client install",
+    "build": "npm --prefix client run build",
+    "start": "node server/src/server.js",
+    "server": "npm --prefix server run dev",
+    "client": "npm --prefix client run dev"
+  },
+  "keywords": ["college", "complaint-management", "mern", "vite", "tailwind"],
+  "author": "",
+  "license": "ISC"
+}
