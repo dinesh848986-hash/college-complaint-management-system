@@ -14,11 +14,19 @@ const complaintRoutes = require('./routes/complaintRoutes');
 const { notFound, errorHandler } = require('./middleware/errorMiddleware');
 
 // Validate required environment variables in production
-if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
-  console.error(
-    '[Configuration Error] FATAL: JWT_SECRET environment variable is required in production mode.'
-  );
-  process.exit(1);
+if (process.env.NODE_ENV === 'production') {
+  if (!process.env.JWT_SECRET) {
+    console.error(
+      '[Configuration Error] FATAL: JWT_SECRET environment variable is required in production mode.'
+    );
+    process.exit(1);
+  }
+  if (!process.env.MONGODB_URI) {
+    console.error(
+      '[Configuration Error] FATAL: MONGODB_URI environment variable is required in production mode.'
+    );
+    process.exit(1);
+  }
 }
 
 const app = express();
