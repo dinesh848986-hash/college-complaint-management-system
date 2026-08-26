@@ -90,6 +90,16 @@ app.use('/api/complaints', complaintRoutes);
 
 // Combined Frontend & Backend: Serve built React frontend from client/dist
 const clientDistPath = path.join(__dirname, '../../client/dist');
+console.log('[Static Files] clientDistPath:', clientDistPath);
+console.log('[Static Files] exists:', fs.existsSync(clientDistPath));
+console.log(
+  '[Static Files] index.js exists:',
+  fs.existsSync(path.join(clientDistPath, 'assets/index-CLPIbv-q.js'))
+);
+console.log(
+  '[Static Files] index.css exists:',
+  fs.existsSync(path.join(clientDistPath, 'assets/index-Crc34EYu.css'))
+);
 if (fs.existsSync(clientDistPath)) {
   app.use(express.static(clientDistPath));
 
