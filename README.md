@@ -111,13 +111,19 @@ npm install
 ```
 
 ### 3. Environment Variables
-The backend configuration is defined in `server/.env`:
+Copy the configuration template from `server/.env.example` to `server/.env`:
+```bash
+cp server/.env.example server/.env
+```
+
+Key environment variables:
 ```env
 PORT=5000
 NODE_ENV=development
 MONGODB_URI=mongodb://127.0.0.1:27017/college-complaint-db
-JWT_SECRET=college_complaint_management_system_super_secret_jwt_key_2026
+JWT_SECRET=your_secure_jwt_secret_key
 JWT_EXPIRES_IN=7d
+CLIENT_URL=http://localhost:5173
 ```
 *(If a local MongoDB daemon is not detected, an in-memory database automatically initializes for zero-config local development).*
 

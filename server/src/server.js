@@ -13,15 +13,53 @@ const authRoutes = require('./routes/authRoutes');
 const complaintRoutes = require('./routes/complaintRoutes');
 const { notFound, errorHandler } = require('./middleware/errorMiddleware');
 
+// Validate required environment variables in production
+if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
+  console.error(
+    '[Configuration Error] FATAL: JWT_SECRET environment variable is required in production mode.'
+  );
+  process.exit(1);
+}
+
 const app = express();
 
-// Middleware
-app.use(
-  cors({
-    origin: '*',
-    credentials: true,
-  })
-);
+// Dynamic CORS configuration
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:5000',
+  'http://127.0.0.1:5173',
+  'http://127.0.0.1:5000',
+];
+
+if (process.env.CLIENT_URL) {
+  const configuredOrigins = process.env.CLIENT_URL.split(',').map((url) => url.trim());
+  allowedOrigins.push(...configuredOrigins);
+}
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Allow requests with no origin (same-origin, curl, server-to-server)
+    if (!origin) return callback(null, true);
+
+    // In development, allow localhost and tunnel origins
+    if (process.env.NODE_ENV !== 'production') {
+      return callback(null, true);
+    }
+
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    return callback(
+      new Error(`CORS blocked request from unauthorized origin: ${origin}`)
+    );
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

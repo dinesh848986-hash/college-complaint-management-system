@@ -1,11 +1,23 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
+// Helper to retrieve JWT Secret securely
+const getJwtSecret = () => {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error(
+        'Server configuration error: JWT_SECRET environment variable is required in production.'
+      );
+    }
+    return 'local_dev_only_jwt_secret_key_2026';
+  }
+  return secret;
+};
+
 // Helper to generate JWT
 const generateToken = (userId, role) => {
-  const secret =
-    process.env.JWT_SECRET ||
-    'college_complaint_management_system_super_secret_jwt_key_2026';
+  const secret = getJwtSecret();
   const expiresIn = process.env.JWT_EXPIRES_IN || '7d';
   return jwt.sign({ id: userId, role }, secret, { expiresIn });
 };

@@ -1,6 +1,19 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
+const getJwtSecret = () => {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error(
+        'Server configuration error: JWT_SECRET environment variable is required in production.'
+      );
+    }
+    return 'local_dev_only_jwt_secret_key_2026';
+  }
+  return secret;
+};
+
 const protect = async (req, res, next) => {
   let token;
 
@@ -11,7 +24,7 @@ const protect = async (req, res, next) => {
     try {
       token = req.headers.authorization.split(' ')[1];
 
-      const secret = process.env.JWT_SECRET || 'college_complaint_management_system_super_secret_jwt_key_2026';
+      const secret = getJwtSecret();
       const decoded = jwt.verify(token, secret);
 
       const user = await User.findById(decoded.id).select('-password');
