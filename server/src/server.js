@@ -21,6 +21,7 @@ if (process.env.NODE_ENV === 'production') {
     );
     process.exit(1);
   }
+
   if (!process.env.MONGODB_URI) {
     console.error(
       '[Configuration Error] FATAL: MONGODB_URI environment variable is required in production mode.'
@@ -40,7 +41,10 @@ const allowedOrigins = [
 ];
 
 if (process.env.CLIENT_URL) {
-  const configuredOrigins = process.env.CLIENT_URL.split(',').map((url) => url.trim());
+  const configuredOrigins = process.env.CLIENT_URL
+    .split(',')
+    .map((url) => url.trim());
+
   allowedOrigins.push(...configuredOrigins);
 }
 
@@ -62,6 +66,7 @@ const corsOptions = {
       new Error(`CORS blocked request from unauthorized origin: ${origin}`)
     );
   },
+
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
@@ -90,32 +95,48 @@ app.use('/api/complaints', complaintRoutes);
 
 // Combined Frontend & Backend: Serve built React frontend from client/dist
 const clientDistPath = path.join(__dirname, '../../client/dist');
+
 console.log('[Static Files] clientDistPath:', clientDistPath);
 console.log('[Static Files] exists:', fs.existsSync(clientDistPath));
+
 console.log(
   '[Static Files] index.js exists:',
-  fs.existsSync(path.join(clientDistPath, 'assets/index-CLPIbv-q.js'))
+  fs.existsSync(
+    path.join(clientDistPath, 'assets/index-CLPIbv-q.js')
+  )
 );
+
 console.log(
   '[Static Files] index.css exists:',
-  fs.existsSync(path.join(clientDistPath, 'assets/index-Crc34EYu.css'))
+  fs.existsSync(
+    path.join(clientDistPath, 'assets/index-Crc34EYu.css')
+  )
 );
-if (fs.existsSync(clientDistPath)) {
-  app.use(express.static(clientDistPath, {
-    fallthrough: false
-  }));
 
+if (fs.existsSync(clientDistPath)) {
+  // Serve Vite assets
+  app.use(
+    '/assets',
+    express.static(path.join(clientDistPath, 'assets'))
+  );
+
+  // Serve the rest of the React build
+  app.use(express.static(clientDistPath));
+
+  // SPA fallback for React Router
   app.get('*', (req, res, next) => {
-    if (req.originalUrl.startsWith('/api') || req.originalUrl.startsWith('/uploads')) {
+    if (
+      req.originalUrl.startsWith('/api') ||
+      req.originalUrl.startsWith('/uploads')
+    ) {
       return next();
     }
 
     res.sendFile(path.join(clientDistPath, 'index.html'));
   });
 }
-}
 
-// Error Handling Middleware (only for unmatched /api routes)
+// Error Handling Middleware
 app.use(notFound);
 app.use(errorHandler);
 
@@ -125,6 +146,7 @@ const startServer = async () => {
   try {
     await connectDB();
     await seedDemoData();
+
     const serverInstance = app.listen(PORT, () => {
       console.log(
         `[Server] College Complaint Management System (Unified Frontend + Backend) running in ${
@@ -132,6 +154,7 @@ const startServer = async () => {
         } mode on port ${PORT}`
       );
     });
+
     return serverInstance;
   } catch (error) {
     console.error('Failed to initialize server:', error);
@@ -141,6 +164,7 @@ const startServer = async () => {
 
 // If run directly, start automatically
 let serverPromise = null;
+
 if (require.main === module) {
   serverPromise = startServer();
 }
