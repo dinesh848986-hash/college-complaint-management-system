@@ -48,31 +48,47 @@ if (process.env.CLIENT_URL) {
   allowedOrigins.push(...configuredOrigins);
 }
 
-const corsOptions = {
-  origin: (origin, callback) => {
-    // Allow requests with no origin (same-origin, curl, server-to-server)
-    if (!origin) return callback(null, true);
+// Automatically support Render production deployment URLs if present
+if (process.env.RENDER_EXTERNAL_URL) {
+  allowedOrigins.push(process.env.RENDER_EXTERNAL_URL.trim().replace(/\/$/, ''));
+}
+if (process.env.RENDER_EXTERNAL_HOSTNAME) {
+  allowedOrigins.push(`https://${process.env.RENDER_EXTERNAL_HOSTNAME.trim()}`);
+  allowedOrigins.push(`http://${process.env.RENDER_EXTERNAL_HOSTNAME.trim()}`);
+}
 
-    // In development, allow localhost and tunnel origins
-    if (process.env.NODE_ENV !== 'production') {
-      return callback(null, true);
-    }
+const corsOptionsDelegate = (req, callback) => {
+  const origin = req.headers.origin;
+  let isAllowed = false;
 
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    }
+  // Allow requests with no origin (same-origin navigation, curl, server-to-server)
+  if (!origin) {
+    isAllowed = true;
+  } else if (process.env.NODE_ENV !== 'production') {
+    // In development, allow all origins
+    isAllowed = true;
+  } else if (allowedOrigins.includes(origin)) {
+    isAllowed = true;
+  } else {
+    // Allow same-origin requests (origin matching Host or X-Forwarded-Host)
+    try {
+      const originHost = new URL(origin).host;
+      const reqHost = (req.headers['x-forwarded-host'] || req.headers.host || '').split(',')[0].trim();
+      if (originHost && reqHost && originHost === reqHost) {
+        isAllowed = true;
+      }
+    } catch (_) {}
+  }
 
-    return callback(
-      new Error(`CORS blocked request from unauthorized origin: ${origin}`)
-    );
-  },
-
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  callback(null, {
+    origin: isAllowed,
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  });
 };
 
-app.use(cors(corsOptions));
+app.use(cors(corsOptionsDelegate));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
