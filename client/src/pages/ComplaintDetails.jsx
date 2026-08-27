@@ -136,23 +136,23 @@ const ComplaintDetails = () => {
       <div className="flex items-center justify-between">
         <Link
           to={user?.role === 'admin' ? '/admin' : '/dashboard'}
-          className="inline-flex items-center gap-2 text-xs font-semibold text-slate-500 hover:text-slate-900 transition-colors"
+          className="inline-flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-campus-600 transition-colors cursor-pointer"
         >
           <ArrowLeft className="w-4 h-4" />
           {user?.role === 'admin'
             ? 'Back to Administration Console'
             : 'Back to Complaints Dashboard'}
         </Link>
-        <span className="text-xs text-slate-400 font-mono">
+        <span className="text-xs text-slate-400 font-mono font-medium">
           ID: {complaint._id}
         </span>
       </div>
 
       {/* Main Complaint Header Card */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-soft p-6 sm:p-8">
+      <div className="glass-card rounded-3xl border border-slate-200/80 shadow-card p-6 sm:p-8 relative overflow-hidden">
         <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-slate-100 text-slate-700">
+            <span className="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-slate-100/90 text-slate-700 border border-slate-200/60">
               {complaint.category}
             </span>
             <PriorityBadge priority={complaint.priority} />
@@ -160,25 +160,29 @@ const ComplaintDetails = () => {
           <StatusBadge status={complaint.status} size="lg" />
         </div>
 
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mb-4">
+        <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mb-4">
           {complaint.title}
         </h1>
 
         {/* Metadata Strip */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-100 text-xs text-slate-600">
-          <div className="flex items-center gap-2">
-            <MapPin className="w-4 h-4 text-campus-600 shrink-0" />
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-campus-50 text-campus-600 flex items-center justify-center shrink-0">
+              <MapPin className="w-4 h-4" />
+            </div>
             <div>
               <span className="text-slate-400 block text-[10px] uppercase font-bold">Location</span>
-              <span className="font-semibold text-slate-800">{complaint.location}</span>
+              <span className="font-bold text-slate-800">{complaint.location}</span>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            <Calendar className="w-4 h-4 text-campus-600 shrink-0" />
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-campus-50 text-campus-600 flex items-center justify-center shrink-0">
+              <Calendar className="w-4 h-4" />
+            </div>
             <div>
               <span className="text-slate-400 block text-[10px] uppercase font-bold">Submitted Date</span>
-              <span className="font-semibold text-slate-800">
+              <span className="font-bold text-slate-800">
                 {new Date(complaint.createdAt).toLocaleDateString([], {
                   month: 'short',
                   day: 'numeric',
@@ -188,11 +192,13 @@ const ComplaintDetails = () => {
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            <Clock className="w-4 h-4 text-campus-600 shrink-0" />
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-campus-50 text-campus-600 flex items-center justify-center shrink-0">
+              <Clock className="w-4 h-4" />
+            </div>
             <div>
               <span className="text-slate-400 block text-[10px] uppercase font-bold">Last Updated</span>
-              <span className="font-semibold text-slate-800">
+              <span className="font-bold text-slate-800">
                 {new Date(complaint.updatedAt).toLocaleDateString([], {
                   month: 'short',
                   day: 'numeric',
@@ -205,9 +211,9 @@ const ComplaintDetails = () => {
       </div>
 
       {/* Resolution Lifecycle Stepper */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-soft p-6 sm:p-8">
-        <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500 mb-4">
-          Resolution Lifecycle
+      <div className="glass-card rounded-3xl border border-slate-200/80 shadow-card p-6 sm:p-8">
+        <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4">
+          Resolution Lifecycle Progress
         </h2>
         <StatusTimeline
           currentStatus={complaint.status}
@@ -220,12 +226,12 @@ const ComplaintDetails = () => {
         {/* Left Column (2 Cols) */}
         <div className="lg:col-span-2 space-y-6">
           {/* Detailed Description */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-soft p-6">
+          <div className="glass-card rounded-3xl border border-slate-200/80 shadow-card p-6 sm:p-7">
             <h2 className="text-base font-bold text-slate-900 mb-3 flex items-center gap-2">
               <FileText className="w-4 h-4 text-campus-600" />
               Detailed Description
             </h2>
-            <div className="text-sm text-slate-700 leading-relaxed whitespace-pre-line bg-slate-50 p-4 rounded-xl border border-slate-100">
+            <div className="text-sm text-slate-700 leading-relaxed whitespace-pre-line bg-slate-50/80 p-5 rounded-2xl border border-slate-200/60 font-normal">
               {complaint.description}
             </div>
           </div>

@@ -12,6 +12,9 @@ import {
   ArrowRight,
   AlertCircle,
   Loader2,
+  Eye,
+  EyeOff,
+  LogIn,
 } from 'lucide-react';
 
 const DEPARTMENTS = [
@@ -37,6 +40,8 @@ const Register = () => {
     phone: '',
   });
 
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -54,7 +59,10 @@ const Register = () => {
     e.preventDefault();
     setError('');
 
-    if (!formData.name.trim() || !formData.email.trim() || !formData.password) {
+    const cleanName = formData.name.trim();
+    const cleanEmail = formData.email.trim().toLowerCase();
+
+    if (!cleanName || !cleanEmail || !formData.password) {
       setError('Please fill in all required fields.');
       return;
     }
@@ -72,12 +80,12 @@ const Register = () => {
     try {
       setIsSubmitting(true);
       await register({
-        name: formData.name,
-        email: formData.email,
+        name: cleanName,
+        email: cleanEmail,
         password: formData.password,
-        studentId: formData.studentId,
+        studentId: formData.studentId.trim(),
         department: formData.department,
-        phone: formData.phone,
+        phone: formData.phone.trim(),
         role: 'student',
       });
       navigate('/dashboard');
@@ -90,31 +98,73 @@ const Register = () => {
     }
   };
 
+  const isDuplicateError =
+    error.toLowerCase().includes('already exists') ||
+    error.toLowerCase().includes('duplicate');
+
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center p-4 sm:p-6 lg:p-8">
-      <div className="w-full max-w-xl">
-        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-soft p-8 sm:p-10">
-          <div className="text-center mb-8">
-            <div className="w-12 h-12 bg-campus-50 text-campus-600 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-xs">
-              <GraduationCap className="w-7 h-7" />
+    <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center p-4 sm:p-6 lg:p-8 relative overflow-hidden">
+      {/* Ambient background glow orbs */}
+      <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-campus-400/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-1/4 left-1/4 w-80 h-80 bg-indigo-400/10 rounded-full blur-3xl pointer-events-none" />
+
+      <div className="w-full max-w-xl relative z-10">
+        <div className="glass-card rounded-3xl border border-slate-200/80 shadow-card p-8 sm:p-10 transition-all">
+          {/* Header */}
+          <div className="text-center mb-6">
+            <div className="w-14 h-14 bg-gradient-to-tr from-campus-600 to-indigo-600 text-white rounded-2xl flex items-center justify-center mx-auto mb-3.5 shadow-md shadow-campus-500/20">
+              <GraduationCap className="w-8 h-8" />
             </div>
-            <h1 className="text-2xl font-bold text-slate-900">Student Registration</h1>
-            <p className="text-sm text-slate-500 mt-1">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+              Student Registration
+            </h1>
+            <p className="text-sm text-slate-500 mt-1 font-medium">
               Create an account to submit facility grievances & track resolutions
             </p>
           </div>
 
+          {/* Segmented Tab Switcher */}
+          <div className="flex bg-slate-100 p-1 rounded-2xl mb-6 border border-slate-200/60">
+            <Link
+              to="/login"
+              className="w-1/2 py-2 text-center text-xs font-semibold text-slate-500 hover:text-slate-900 transition-colors"
+            >
+              Sign In
+            </Link>
+            <div className="w-1/2 py-2 text-center text-xs font-bold text-campus-700 bg-white rounded-xl shadow-xs">
+              Create Account
+            </div>
+          </div>
+
           {error && (
-            <div className="mb-6 bg-rose-50 border border-rose-200 text-rose-700 px-4 py-3 rounded-xl text-sm flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
-              <div className="flex-1">{error}</div>
+            <div className="mb-6 bg-rose-50/90 border border-rose-200 text-rose-700 px-4 py-3.5 rounded-2xl text-sm flex flex-col gap-2 animate-in fade-in duration-200">
+              <div className="flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 shrink-0 mt-0.5 text-rose-600" />
+                <div className="flex-1 font-semibold">{error}</div>
+              </div>
+              {isDuplicateError && (
+                <div className="pl-8 pt-1">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      navigate('/login', {
+                        state: { email: formData.email.trim() },
+                      })
+                    }
+                    className="inline-flex items-center gap-1.5 text-xs font-bold text-campus-700 hover:text-campus-800 bg-white border border-campus-200 px-3 py-1.5 rounded-xl shadow-xs hover:bg-campus-50 transition-all cursor-pointer"
+                  >
+                    <LogIn className="w-3.5 h-3.5" />
+                    Sign In with this email instead →
+                  </button>
+                </div>
+              )}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
                   Full Name *
                 </label>
                 <div className="relative">
@@ -128,14 +178,14 @@ const Register = () => {
                     placeholder="e.g. Alex Morgan"
                     value={formData.name}
                     onChange={handleChange}
-                    className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-campus-500 transition-all"
+                    className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-campus-500 focus:border-transparent transition-all shadow-xs"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
-                  College Email *
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                  Email Address *
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -145,10 +195,10 @@ const Register = () => {
                     type="email"
                     name="email"
                     required
-                    placeholder="student@campus.edu"
+                    placeholder="name@gmail.com or campus.edu"
                     value={formData.email}
                     onChange={handleChange}
-                    className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-campus-500 transition-all"
+                    className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-campus-500 focus:border-transparent transition-all shadow-xs"
                   />
                 </div>
               </div>
@@ -156,7 +206,7 @@ const Register = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
                   Student ID / Roll No.
                 </label>
                 <div className="relative">
@@ -169,13 +219,13 @@ const Register = () => {
                     placeholder="e.g. 2024CS104"
                     value={formData.studentId}
                     onChange={handleChange}
-                    className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-campus-500 transition-all"
+                    className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-campus-500 focus:border-transparent transition-all shadow-xs"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
                   Department
                 </label>
                 <div className="relative">
@@ -186,7 +236,7 @@ const Register = () => {
                     name="department"
                     value={formData.department}
                     onChange={handleChange}
-                    className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-campus-500 transition-all appearance-none cursor-pointer"
+                    className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-campus-500 focus:border-transparent transition-all appearance-none cursor-pointer shadow-xs"
                   >
                     {DEPARTMENTS.map((dept) => (
                       <option key={dept} value={dept}>
@@ -200,7 +250,7 @@ const Register = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
                   Password (min 6 chars) *
                 </label>
                 <div className="relative">
@@ -208,19 +258,26 @@ const Register = () => {
                     <Lock className="w-4 h-4" />
                   </div>
                   <input
-                    type="password"
+                    type={showPassword ? 'text' : 'password'}
                     name="password"
                     required
                     placeholder="••••••••"
                     value={formData.password}
                     onChange={handleChange}
-                    className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-campus-500 transition-all"
+                    className="w-full pl-10 pr-10 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-campus-500 focus:border-transparent transition-all shadow-xs"
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 transition-colors"
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
                   Confirm Password *
                 </label>
                 <div className="relative">
@@ -228,20 +285,27 @@ const Register = () => {
                     <Lock className="w-4 h-4" />
                   </div>
                   <input
-                    type="password"
+                    type={showConfirmPassword ? 'text' : 'password'}
                     name="confirmPassword"
                     required
                     placeholder="••••••••"
                     value={formData.confirmPassword}
                     onChange={handleChange}
-                    className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-campus-500 transition-all"
+                    className="w-full pl-10 pr-10 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-campus-500 focus:border-transparent transition-all shadow-xs"
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 transition-colors"
+                  >
+                    {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
                 </div>
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
                 Phone Number (Optional)
               </label>
               <div className="relative">
@@ -254,7 +318,7 @@ const Register = () => {
                   placeholder="+1 (555) 000-0000"
                   value={formData.phone}
                   onChange={handleChange}
-                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-campus-500 transition-all"
+                  className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-campus-500 focus:border-transparent transition-all shadow-xs"
                 />
               </div>
             </div>
@@ -262,12 +326,12 @@ const Register = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full mt-4 bg-campus-600 hover:bg-campus-700 text-white font-semibold py-2.5 px-4 rounded-xl shadow-sm hover:shadow transition-all flex items-center justify-center gap-2 disabled:opacity-70"
+              className="w-full mt-3 bg-gradient-to-r from-campus-600 via-campus-600 to-indigo-600 hover:from-campus-700 hover:to-indigo-700 text-white font-bold py-3 px-4 rounded-xl shadow-md shadow-campus-500/25 hover:shadow-lg hover:shadow-campus-500/35 transition-all hover:scale-[1.01] flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer"
             >
               {isSubmitting ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  Creating Account...
+                  Creating Student Account...
                 </>
               ) : (
                 <>
@@ -278,13 +342,13 @@ const Register = () => {
             </button>
           </form>
 
-          <div className="mt-6 text-center text-xs text-slate-500">
-            Already have an account?{' '}
+          <div className="mt-6 text-center text-xs text-slate-500 font-medium">
+            Already registered?{' '}
             <Link
               to="/login"
-              className="text-campus-600 font-semibold hover:text-campus-700 underline"
+              className="text-campus-600 font-bold hover:text-campus-700 hover:underline"
             >
-              Log in here
+              Sign in to your account
             </Link>
           </div>
         </div>

@@ -42,9 +42,12 @@ const register = async (req, res, next) => {
     // Check if user already exists
     const existingUser = await User.findOne({ email: normalizedEmail });
     if (existingUser) {
+      const message = normalizedEmail.includes('@gmail.')
+        ? 'Gmail already exists'
+        : 'An account with this email already exists';
       return res.status(400).json({
         success: false,
-        message: 'An account with this email already exists',
+        message,
       });
     }
 
@@ -127,7 +130,7 @@ const login = async (req, res, next) => {
       } else {
         return res.status(401).json({
           success: false,
-          message: 'Invalid email or password',
+          message: 'Invalid email or password.',
         });
       }
     } else if (normalizedEmail === 'student@campus.edu' && password === 'student123') {
@@ -149,7 +152,7 @@ const login = async (req, res, next) => {
       if (!isMatch) {
         return res.status(401).json({
           success: false,
-          message: 'Invalid email or password',
+          message: 'Invalid email or password.',
         });
       }
     }

@@ -11,8 +11,13 @@ const errorHandler = (err, req, res, next) => {
   // Handle Mongoose duplicate key error
   if (err.code === 11000) {
     statusCode = 400;
-    const field = Object.keys(err.keyValue)[0];
-    message = `An account with this ${field} already exists.`;
+    const field = Object.keys(err.keyValue || {})[0] || 'email';
+    const val = err.keyValue ? String(err.keyValue[field] || '').toLowerCase() : '';
+    if (field === 'email' && val.includes('@gmail.')) {
+      message = 'Gmail already exists';
+    } else {
+      message = `An account with this ${field} already exists`;
+    }
   }
 
   // Handle Mongoose validation errors

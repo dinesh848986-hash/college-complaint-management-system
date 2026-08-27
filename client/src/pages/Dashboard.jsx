@@ -100,26 +100,27 @@ const Dashboard = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Welcome & Action Banner */}
-      <div className="bg-gradient-to-r from-campus-900 via-campus-800 to-campus-700 rounded-2xl p-6 sm:p-8 text-white shadow-soft flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative overflow-hidden">
+      <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-campus-900 rounded-3xl p-6 sm:p-10 text-white shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative overflow-hidden border border-indigo-800/40">
         {/* Background glow circle */}
-        <div className="absolute right-0 top-0 w-80 h-80 bg-white/5 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -right-10 -top-10 w-96 h-96 bg-campus-500/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute left-1/3 -bottom-10 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="space-y-2 z-10">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white/10 text-campus-100 backdrop-blur-xs">
-            Student Complaint Management
-          </span>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+        <div className="space-y-3 z-10">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-white/10 text-campus-200 backdrop-blur-md border border-white/10 shadow-xs">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            Campus Facilities & Grievance Portal
+          </div>
+          <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-white">
             Welcome back, {user?.name || 'Student'}!
           </h1>
-          <p className="text-campus-100 text-sm max-w-xl">
-            Track and manage your campus grievances. All submissions are dispatched
-            directly to the respective facilities and maintenance teams.
+          <p className="text-slate-300 text-sm sm:text-base max-w-xl leading-relaxed">
+            Lodge, track, and monitor campus facility grievances in real-time. Submissions route directly to university facility coordinators.
           </p>
         </div>
 
         <Link
           to="/complaints/new"
-          className="z-10 inline-flex items-center gap-2 bg-white text-campus-800 hover:bg-campus-50 font-bold px-5 py-3 rounded-xl shadow-md transition-all hover:scale-[1.02] shrink-0"
+          className="z-10 inline-flex items-center gap-2.5 bg-white text-campus-900 hover:text-campus-950 font-extrabold px-6 py-3.5 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-[1.02] shrink-0 border border-white/40 cursor-pointer"
         >
           <PlusCircle className="w-5 h-5 text-campus-600" />
           Submit New Complaint
@@ -127,58 +128,58 @@ const Dashboard = () => {
       </div>
 
       {/* Metrics Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
         {/* Total */}
-        <div className="bg-white rounded-xl border border-slate-200/80 p-5 shadow-soft">
-          <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-semibold uppercase tracking-wider">Total Complaints</span>
-            <div className="w-8 h-8 rounded-lg bg-campus-50 text-campus-600 flex items-center justify-center">
+        <div className="glass-card rounded-2xl border border-slate-200/80 border-t-4 border-t-campus-500 p-5 sm:p-6 shadow-sm hover:shadow-md transition-all">
+          <div className="flex items-center justify-between text-slate-500 mb-2.5">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Total Grievances</span>
+            <div className="w-9 h-9 rounded-xl bg-campus-50 text-campus-600 flex items-center justify-center shadow-xs">
               <FileText className="w-4 h-4" />
             </div>
           </div>
-          <p className="text-2xl sm:text-3xl font-extrabold text-slate-900">{totalCount}</p>
-          <p className="text-[11px] text-slate-400 mt-1">Submitted through your account</p>
+          <p className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">{totalCount}</p>
+          <p className="text-[11px] text-slate-400 font-medium mt-1">Submitted through your account</p>
         </div>
 
         {/* Pending */}
-        <div className="bg-white rounded-xl border border-slate-200/80 p-5 shadow-soft">
-          <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-semibold uppercase tracking-wider">Pending Review</span>
-            <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
+        <div className="glass-card rounded-2xl border border-slate-200/80 border-t-4 border-t-amber-500 p-5 sm:p-6 shadow-sm hover:shadow-md transition-all">
+          <div className="flex items-center justify-between text-slate-500 mb-2.5">
+            <span className="text-xs font-bold uppercase tracking-wider text-amber-700">Pending Review</span>
+            <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shadow-xs">
               <Clock className="w-4 h-4" />
             </div>
           </div>
-          <p className="text-2xl sm:text-3xl font-extrabold text-slate-900">{pendingCount}</p>
-          <p className="text-[11px] text-slate-400 mt-1">Awaiting department triage</p>
+          <p className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">{pendingCount}</p>
+          <p className="text-[11px] text-slate-400 font-medium mt-1">Awaiting staff department triage</p>
         </div>
 
         {/* In Progress */}
-        <div className="bg-white rounded-xl border border-slate-200/80 p-5 shadow-soft">
-          <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-semibold uppercase tracking-wider">In Progress</span>
-            <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
+        <div className="glass-card rounded-2xl border border-slate-200/80 border-t-4 border-t-indigo-500 p-5 sm:p-6 shadow-sm hover:shadow-md transition-all">
+          <div className="flex items-center justify-between text-slate-500 mb-2.5">
+            <span className="text-xs font-bold uppercase tracking-wider text-indigo-700">In Progress</span>
+            <div className="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shadow-xs">
               <AlertTriangle className="w-4 h-4" />
             </div>
           </div>
-          <p className="text-2xl sm:text-3xl font-extrabold text-slate-900">{inProgressCount}</p>
-          <p className="text-[11px] text-slate-400 mt-1">Assigned or under active repair</p>
+          <p className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">{inProgressCount}</p>
+          <p className="text-[11px] text-slate-400 font-medium mt-1">Under active technical repair</p>
         </div>
 
         {/* Resolved */}
-        <div className="bg-white rounded-xl border border-slate-200/80 p-5 shadow-soft">
-          <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-semibold uppercase tracking-wider">Resolved</span>
-            <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+        <div className="glass-card rounded-2xl border border-slate-200/80 border-t-4 border-t-emerald-500 p-5 sm:p-6 shadow-sm hover:shadow-md transition-all">
+          <div className="flex items-center justify-between text-slate-500 mb-2.5">
+            <span className="text-xs font-bold uppercase tracking-wider text-emerald-700">Resolved</span>
+            <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shadow-xs">
               <CheckCircle2 className="w-4 h-4" />
             </div>
           </div>
-          <p className="text-2xl sm:text-3xl font-extrabold text-slate-900">{resolvedCount}</p>
-          <p className="text-[11px] text-slate-400 mt-1">Successfully addressed</p>
+          <p className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">{resolvedCount}</p>
+          <p className="text-[11px] text-slate-400 font-medium mt-1">Successfully addressed & closed</p>
         </div>
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-soft">
+      <div className="glass-card rounded-2xl border border-slate-200/80 p-4 sm:p-5 shadow-sm">
         <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
           {/* Search Input */}
           <div className="relative flex-1">
@@ -187,22 +188,22 @@ const Dashboard = () => {
             </div>
             <input
               type="text"
-              placeholder="Search complaints by title or location..."
+              placeholder="Search complaints by title, keyword, or room location..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-campus-500 transition-all"
+              className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-campus-500 focus:border-transparent transition-all shadow-xs"
             />
           </div>
 
           {/* Select Dropdowns & Actions */}
           <div className="flex flex-wrap items-center gap-2.5">
             {/* Category Select */}
-            <div className="flex items-center gap-1 bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1">
-              <span className="text-xs text-slate-400 font-medium">Category:</span>
+            <div className="flex items-center gap-1.5 bg-white border border-slate-200 rounded-xl px-3 py-1.5 shadow-xs">
+              <span className="text-xs text-slate-400 font-bold uppercase tracking-wider">Category:</span>
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="bg-transparent text-xs font-semibold text-slate-700 focus:outline-none py-1 cursor-pointer"
+                className="bg-transparent text-xs font-bold text-slate-800 focus:outline-none cursor-pointer pr-1"
               >
                 {CATEGORIES.map((cat) => (
                   <option key={cat} value={cat}>
@@ -213,12 +214,12 @@ const Dashboard = () => {
             </div>
 
             {/* Status Select */}
-            <div className="flex items-center gap-1 bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1">
-              <span className="text-xs text-slate-400 font-medium">Status:</span>
+            <div className="flex items-center gap-1.5 bg-white border border-slate-200 rounded-xl px-3 py-1.5 shadow-xs">
+              <span className="text-xs text-slate-400 font-bold uppercase tracking-wider">Status:</span>
               <select
                 value={selectedStatus}
                 onChange={(e) => setSelectedStatus(e.target.value)}
-                className="bg-transparent text-xs font-semibold text-slate-700 focus:outline-none py-1 cursor-pointer"
+                className="bg-transparent text-xs font-bold text-slate-800 focus:outline-none cursor-pointer pr-1"
               >
                 {STATUSES.map((st) => (
                   <option key={st} value={st}>
@@ -232,7 +233,7 @@ const Dashboard = () => {
             {(search || selectedCategory !== 'All' || selectedStatus !== 'All') && (
               <button
                 onClick={resetFilters}
-                className="text-xs text-slate-500 hover:text-slate-800 px-2 py-1 rounded hover:bg-slate-100"
+                className="text-xs font-bold text-campus-600 hover:text-campus-800 px-3 py-2 rounded-xl hover:bg-campus-50 border border-campus-200 transition-colors cursor-pointer"
               >
                 Reset
               </button>
@@ -243,7 +244,7 @@ const Dashboard = () => {
               onClick={() => fetchComplaints(true)}
               title="Refresh complaints list"
               disabled={refreshing}
-              className="p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-xl border border-slate-200/80 transition-colors disabled:opacity-50"
+              className="p-2 text-slate-500 hover:text-slate-800 bg-white hover:bg-slate-50 rounded-xl border border-slate-200 shadow-xs transition-colors disabled:opacity-50 cursor-pointer"
             >
               <RotateCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
             </button>
@@ -253,20 +254,22 @@ const Dashboard = () => {
 
       {/* Complaints Grid / Loading / Empty State */}
       <div>
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <FolderOpen className="w-5 h-5 text-slate-400" />
-            <h2 className="text-lg font-bold text-slate-900">Your Complaints</h2>
-            <span className="text-xs font-semibold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">
+        <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-campus-50 text-campus-600 flex items-center justify-center">
+              <FolderOpen className="w-4 h-4" />
+            </div>
+            <h2 className="text-lg font-bold text-slate-900">Your Grievances Queue</h2>
+            <span className="text-xs font-extrabold bg-campus-100 text-campus-700 px-2.5 py-0.5 rounded-full border border-campus-200">
               {complaints.length}
             </span>
           </div>
         </div>
 
         {error && (
-          <div className="bg-rose-50 border border-rose-200 text-rose-700 p-4 rounded-xl text-sm mb-6 flex items-center gap-2">
-            <AlertTriangle className="w-4 h-4 shrink-0" />
-            {error}
+          <div className="bg-rose-50 border border-rose-200 text-rose-700 p-4 rounded-2xl text-sm mb-6 flex items-center gap-2.5 shadow-xs">
+            <AlertTriangle className="w-4 h-4 shrink-0 text-rose-600" />
+            <span className="font-semibold">{error}</span>
           </div>
         )}
 

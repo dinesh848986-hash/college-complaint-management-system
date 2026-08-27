@@ -195,23 +195,21 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
       {/* Top Banner / Header */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2.5 mb-1">
-            <div className="p-2 rounded-xl bg-campus-100 text-campus-700">
-              <Shield className="w-5 h-5" />
-            </div>
-            <span className="text-xs font-bold uppercase tracking-wider text-campus-700 bg-campus-50 px-2.5 py-0.5 rounded-full border border-campus-200">
-              Administrative Console
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-purple-700 bg-purple-100 px-3 py-1 rounded-full border border-purple-200 shadow-2xs">
+              <Shield className="w-3.5 h-3.5 text-purple-600" />
+              Administrative Command Console
             </span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-            Campus Grievance Management
+          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+            Campus Facilities Oversight
           </h1>
-          <p className="text-sm text-slate-500 mt-1">
-            Review, assign, and track resolution lifecycles across all university facilities
+          <p className="text-sm text-slate-500 mt-1 font-medium">
+            Review, dispatch technicians, and manage resolution lifecycles across all university facilities
           </p>
         </div>
 
@@ -219,91 +217,91 @@ const AdminDashboard = () => {
           <button
             onClick={() => fetchComplaints(true)}
             disabled={refreshing || loading}
-            className="inline-flex items-center gap-2 px-3.5 py-2 bg-white hover:bg-slate-50 text-slate-700 text-sm font-semibold rounded-xl border border-slate-200 shadow-xs transition-all disabled:opacity-60"
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold rounded-xl border border-slate-200 shadow-xs transition-all disabled:opacity-60 cursor-pointer"
           >
-            <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin text-campus-600' : ''}`} />
+            <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin text-campus-600' : ''}`} />
             Refresh Queue
           </button>
         </div>
       </div>
 
       {/* KPI Stats Grid - 8 Real Metrics */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 sm:gap-4 mb-8">
+      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 sm:gap-3.5">
         {/* Total */}
-        <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
-          <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+        <div className="glass-card p-3.5 rounded-2xl border border-slate-200/80 border-t-2 border-t-slate-400 shadow-2xs">
+          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
             Total
           </span>
-          <div className="text-2xl font-extrabold text-slate-900 mt-1">{stats.total}</div>
-          <span className="text-[10px] text-slate-500">Campus-wide</span>
+          <div className="text-2xl font-black text-slate-900 mt-0.5">{stats.total}</div>
+          <span className="text-[10px] text-slate-400 font-medium">Campus-wide</span>
         </div>
 
         {/* Submitted */}
-        <div className="bg-sky-50/50 p-4 rounded-2xl border border-sky-200/60 shadow-xs">
-          <span className="text-[11px] font-bold text-sky-600 uppercase tracking-wider block">
+        <div className="glass-card p-3.5 rounded-2xl border border-sky-200/80 border-t-2 border-t-sky-500 bg-sky-50/40 shadow-2xs">
+          <span className="text-[10px] font-bold text-sky-700 uppercase tracking-wider block">
             Submitted
           </span>
-          <div className="text-2xl font-extrabold text-sky-900 mt-1">{stats.submitted}</div>
-          <span className="text-[10px] text-sky-600">New intake</span>
+          <div className="text-2xl font-black text-sky-900 mt-0.5">{stats.submitted}</div>
+          <span className="text-[10px] text-sky-600 font-medium">New intake</span>
         </div>
 
         {/* Under Review */}
-        <div className="bg-amber-50/50 p-4 rounded-2xl border border-amber-200/60 shadow-xs">
-          <span className="text-[11px] font-bold text-amber-700 uppercase tracking-wider block">
+        <div className="glass-card p-3.5 rounded-2xl border border-amber-200/80 border-t-2 border-t-amber-500 bg-amber-50/40 shadow-2xs">
+          <span className="text-[10px] font-bold text-amber-800 uppercase tracking-wider block">
             Reviewing
           </span>
-          <div className="text-2xl font-extrabold text-amber-900 mt-1">{stats.underReview}</div>
-          <span className="text-[10px] text-amber-600">Initial review</span>
+          <div className="text-2xl font-black text-amber-900 mt-0.5">{stats.underReview}</div>
+          <span className="text-[10px] text-amber-600 font-medium">Initial review</span>
         </div>
 
         {/* Assigned */}
-        <div className="bg-purple-50/50 p-4 rounded-2xl border border-purple-200/60 shadow-xs">
-          <span className="text-[11px] font-bold text-purple-700 uppercase tracking-wider block">
+        <div className="glass-card p-3.5 rounded-2xl border border-purple-200/80 border-t-2 border-t-purple-500 bg-purple-50/40 shadow-2xs">
+          <span className="text-[10px] font-bold text-purple-800 uppercase tracking-wider block">
             Assigned
           </span>
-          <div className="text-2xl font-extrabold text-purple-900 mt-1">{stats.assigned}</div>
-          <span className="text-[10px] text-purple-600">Staff assigned</span>
+          <div className="text-2xl font-black text-purple-900 mt-0.5">{stats.assigned}</div>
+          <span className="text-[10px] text-purple-600 font-medium">Staff assigned</span>
         </div>
 
         {/* In Progress */}
-        <div className="bg-indigo-50/50 p-4 rounded-2xl border border-indigo-200/60 shadow-xs">
-          <span className="text-[11px] font-bold text-indigo-700 uppercase tracking-wider block">
+        <div className="glass-card p-3.5 rounded-2xl border border-indigo-200/80 border-t-2 border-t-indigo-500 bg-indigo-50/40 shadow-2xs">
+          <span className="text-[10px] font-bold text-indigo-800 uppercase tracking-wider block">
             In Progress
           </span>
-          <div className="text-2xl font-extrabold text-indigo-900 mt-1">{stats.inProgress}</div>
-          <span className="text-[10px] text-indigo-600">Active repairs</span>
+          <div className="text-2xl font-black text-indigo-900 mt-0.5">{stats.inProgress}</div>
+          <span className="text-[10px] text-indigo-600 font-medium">Active repairs</span>
         </div>
 
         {/* Resolved */}
-        <div className="bg-emerald-50/50 p-4 rounded-2xl border border-emerald-200/60 shadow-xs">
-          <span className="text-[11px] font-bold text-emerald-700 uppercase tracking-wider block">
+        <div className="glass-card p-3.5 rounded-2xl border border-emerald-200/80 border-t-2 border-t-emerald-500 bg-emerald-50/40 shadow-2xs">
+          <span className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider block">
             Resolved
           </span>
-          <div className="text-2xl font-extrabold text-emerald-900 mt-1">{stats.resolved}</div>
-          <span className="text-[10px] text-emerald-600">Fixed</span>
+          <div className="text-2xl font-black text-emerald-900 mt-0.5">{stats.resolved}</div>
+          <span className="text-[10px] text-emerald-600 font-medium">Fixed & verified</span>
         </div>
 
         {/* Closed */}
-        <div className="bg-slate-100/70 p-4 rounded-2xl border border-slate-200 shadow-xs">
-          <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
+        <div className="glass-card p-3.5 rounded-2xl border border-slate-200 border-t-2 border-t-slate-500 bg-slate-100/50 shadow-2xs">
+          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
             Closed
           </span>
-          <div className="text-2xl font-extrabold text-slate-800 mt-1">{stats.closed}</div>
-          <span className="text-[10px] text-slate-500">Archived</span>
+          <div className="text-2xl font-black text-slate-800 mt-0.5">{stats.closed}</div>
+          <span className="text-[10px] text-slate-500 font-medium">Archived</span>
         </div>
 
         {/* Critical */}
-        <div className="bg-rose-50 p-4 rounded-2xl border border-rose-200 shadow-xs">
-          <span className="text-[11px] font-bold text-rose-700 uppercase tracking-wider block">
+        <div className="glass-card p-3.5 rounded-2xl border border-rose-200 border-t-2 border-t-rose-500 bg-rose-50/50 shadow-2xs">
+          <span className="text-[10px] font-bold text-rose-700 uppercase tracking-wider block">
             Critical
           </span>
-          <div className="text-2xl font-extrabold text-rose-900 mt-1">{stats.critical}</div>
-          <span className="text-[10px] text-rose-600">Urgent action</span>
+          <div className="text-2xl font-black text-rose-900 mt-0.5">{stats.critical}</div>
+          <span className="text-[10px] text-rose-600 font-medium">Urgent action</span>
         </div>
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-soft mb-6">
+      <div className="glass-card p-5 rounded-3xl border border-slate-200/80 shadow-card">
         <form
           onSubmit={handleSearchSubmit}
           className="flex flex-col lg:flex-row items-stretch lg:items-center gap-3"
@@ -315,10 +313,10 @@ const AdminDashboard = () => {
             </div>
             <input
               type="text"
-              placeholder="Search by title, location, student name, or staff..."
+              placeholder="Search by title, location, student name, or assigned staff..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-campus-500 focus:border-transparent transition-all"
+              className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm placeholder-slate-400 text-slate-900 focus:outline-none focus:ring-2 focus:ring-campus-500 focus:border-transparent transition-all shadow-xs"
             />
           </div>
 
@@ -328,7 +326,7 @@ const AdminDashboard = () => {
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-campus-500"
+              className="px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-campus-500 shadow-xs cursor-pointer"
             >
               <option disabled>Category</option>
               {CATEGORIES.map((c) => (
