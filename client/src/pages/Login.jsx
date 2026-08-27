@@ -31,7 +31,7 @@ const Login = () => {
     e.preventDefault();
     setError('');
 
-    const cleanEmail = email.trim();
+    const cleanEmail = email.trim().toLowerCase();
     if (!cleanEmail || !password) {
       setError('Please fill in both email and password.');
       return;
@@ -45,6 +45,7 @@ const Login = () => {
       const destination = from !== '/dashboard' ? from : defaultDest;
       navigate(destination, { replace: true });
     } catch (err) {
+      console.error('[Login] Authentication error:', err);
       setError(
         err.response?.data?.message || 'Invalid email or password.'
       );
@@ -121,7 +122,9 @@ const Login = () => {
                 </div>
                 <input
                   id="email"
+                  name="email"
                   type="email"
+                  autoComplete="username email"
                   required
                   placeholder="name@gmail.com or student@campus.edu"
                   value={email}
@@ -144,7 +147,9 @@ const Login = () => {
                 </div>
                 <input
                   id="password"
+                  name="password"
                   type={showPassword ? 'text' : 'password'}
+                  autoComplete="current-password"
                   required
                   placeholder="••••••••"
                   value={password}

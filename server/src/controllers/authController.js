@@ -65,6 +65,7 @@ const register = async (req, res, next) => {
     });
 
     const token = generateToken(user._id, user.role);
+    console.log(`[Auth] Registered new user: ${normalizedEmail} (Role: ${user.role})`);
 
     res.status(201).json({
       success: true,
@@ -106,6 +107,9 @@ const login = async (req, res, next) => {
     let user = await User.findOne({ email: normalizedEmail }).select(
       '+password'
     );
+
+    console.log(`[Auth] Login attempt for: ${normalizedEmail} | User found: ${!!user}`);
+
     if (!user) {
       if (normalizedEmail === 'student@campus.edu' && password === 'student123') {
         user = await User.create({
@@ -150,6 +154,7 @@ const login = async (req, res, next) => {
       // Compare passwords
       const isMatch = await user.comparePassword(password);
       if (!isMatch) {
+        console.warn(`[Auth] Password mismatch for: ${normalizedEmail}`);
         return res.status(401).json({
           success: false,
           message: 'Invalid email or password.',
@@ -158,6 +163,7 @@ const login = async (req, res, next) => {
     }
 
     const token = generateToken(user._id, user.role);
+    console.log(`[Auth] Login successful for: ${normalizedEmail} (Role: ${user.role})`);
 
     res.status(200).json({
       success: true,

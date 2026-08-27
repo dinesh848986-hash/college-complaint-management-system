@@ -174,6 +174,7 @@ const Register = () => {
                   <input
                     type="text"
                     name="name"
+                    autoComplete="name"
                     required
                     placeholder="e.g. Alex Morgan"
                     value={formData.name}
@@ -194,6 +195,7 @@ const Register = () => {
                   <input
                     type="email"
                     name="email"
+                    autoComplete="username email"
                     required
                     placeholder="name@gmail.com or campus.edu"
                     value={formData.email}
@@ -260,6 +262,7 @@ const Register = () => {
                   <input
                     type={showPassword ? 'text' : 'password'}
                     name="password"
+                    autoComplete="new-password"
                     required
                     placeholder="••••••••"
                     value={formData.password}
@@ -287,6 +290,7 @@ const Register = () => {
                   <input
                     type={showConfirmPassword ? 'text' : 'password'}
                     name="confirmPassword"
+                    autoComplete="new-password"
                     required
                     placeholder="••••••••"
                     value={formData.confirmPassword}

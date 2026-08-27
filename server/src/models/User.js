@@ -53,19 +53,29 @@ const userSchema = new mongoose.Schema(
 );
 
 // Hash password before saving
-userSchema.pre('save', async function (next) {
+userSchema.pre('save', async function () {
   if (!this.isModified('password')) {
-    return next();
+    return;
+  }
+
+  // Prevent re-hashing if password is already a valid bcrypt hash
+  if (
+    typeof this.password === 'string' &&
+    /^\$2[aby]\$\d{2}\$[./A-Za-z0-9]{53}$/.test(this.password)
+  ) {
+    return;
   }
 
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
-  next();
 });
 
 // Compare candidate password with stored hash
 userSchema.methods.comparePassword = async function (candidatePassword) {
-  return bcrypt.compare(candidatePassword, this.password);
+  if (!candidatePassword || !this.password) {
+    return false;
+  }
+  return bcrypt.compare(String(candidatePassword), String(this.password));
 };
 
 module.exports = mongoose.model('User', userSchema);
