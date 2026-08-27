@@ -101,16 +101,18 @@ console.log(
   fs.existsSync(path.join(clientDistPath, 'assets/index-Crc34EYu.css'))
 );
 if (fs.existsSync(clientDistPath)) {
-  app.use('/assets', express.static(path.join(clientDistPath, 'assets')));
-  app.use(express.static(clientDistPath));
+  app.use(express.static(clientDistPath, {
+    fallthrough: false
+  }));
 
-  // SPA fallback for React Router paths
   app.get('*', (req, res, next) => {
     if (req.originalUrl.startsWith('/api') || req.originalUrl.startsWith('/uploads')) {
       return next();
     }
+
     res.sendFile(path.join(clientDistPath, 'index.html'));
   });
+}
 }
 
 // Error Handling Middleware (only for unmatched /api routes)
