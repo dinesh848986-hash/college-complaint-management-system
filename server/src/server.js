@@ -101,6 +101,7 @@ console.log(
   fs.existsSync(path.join(clientDistPath, 'assets/index-Crc34EYu.css'))
 );
 if (fs.existsSync(clientDistPath)) {
+  app.use('/assets', express.static(path.join(clientDistPath, 'assets')));
   app.use(express.static(clientDistPath));
 
   // SPA fallback for React Router paths
